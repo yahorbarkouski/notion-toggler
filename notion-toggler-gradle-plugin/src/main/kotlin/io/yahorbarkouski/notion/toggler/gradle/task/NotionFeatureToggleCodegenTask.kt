@@ -36,7 +36,7 @@ abstract class NotionFeatureToggleCodegenTask @Inject constructor() : DefaultTas
                 project.projectDir
             )
         } catch (e: Exception) {
-            System.err.println("Unable to generate features from Unleash: ${e.message}")
+            System.err.println("Unable to generate features from Notion: ${e.message}")
             e.printStackTrace()
         }
     }
