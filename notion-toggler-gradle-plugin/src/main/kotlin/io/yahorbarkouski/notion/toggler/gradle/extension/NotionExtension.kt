@@ -1,5 +1,8 @@
 package io.yahorbarkouski.notion.toggler.gradle.extension
 
+import io.yahorbarkouski.notion.toggler.core.constants.BASE_FEATURE_FLAG_CLASS
+import io.yahorbarkouski.notion.toggler.core.constants.DEFAULT_DATABASE_NAME
+
 abstract class NotionExtension {
 
     /**
@@ -21,10 +24,4 @@ abstract class NotionExtension {
      * Path to your custom Feature model, optional
      */
     var modelPath: String = BASE_FEATURE_FLAG_CLASS
-
-    companion object {
-
-        const val DEFAULT_DATABASE_NAME = "Features"
-        const val BASE_FEATURE_FLAG_CLASS = "io.yahorbarkouski.notion.toggler.core.FeatureFlag"
-    }
 }
