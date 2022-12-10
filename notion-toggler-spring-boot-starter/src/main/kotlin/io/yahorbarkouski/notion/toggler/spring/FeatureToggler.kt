@@ -48,6 +48,7 @@ class FeatureToggler(
      * @param featureName the name of the feature to check.
      * @return true if the feature is enabled, false otherwise.
      */
+    @Synchronized
     fun isFeatureEnabled(featureName: String): Boolean {
         return featureToggles[featureName]?.enabled ?: false
     }
@@ -58,6 +59,7 @@ class FeatureToggler(
      * @param featureName the name of the feature to get.
      * @return the [FeatureFlag] with the given name, or null if no such feature exists.
      */
+    @Synchronized
     fun getFeatureToggle(featureName: String): FeatureFlag? {
         return featureToggles[featureName]
     }
