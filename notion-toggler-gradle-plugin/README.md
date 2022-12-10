@@ -48,7 +48,7 @@ notionToggler {
    token = System.getenv("NOTION_TOKEN")
    packageName = "io.yahorbarkouski.chat.notion.constants"
    databaseName = "Features"
-modelPath = "io.yahorbarkouski.chat.notion.model.FeatureFlag"
+   modelPath = "io.yahorbarkouski.chat.notion.model.FeatureFlag"
 }
 ```
 ### Generated Features example
