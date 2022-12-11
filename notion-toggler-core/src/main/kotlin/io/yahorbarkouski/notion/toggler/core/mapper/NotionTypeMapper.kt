@@ -1,14 +1,39 @@
 package io.yahorbarkouski.notion.toggler.core.mapper
 
-import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
 import notion.api.v1.model.pages.PageProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.isSubclassOf
 
-class NotionTypeMapper<T>(private val featureToggle: T) {
+/**
+ * The `NotionTypeMapper` class is a generic class that converts a `PageProperty` object to a specified Kotlin type.
+ */
+class NotionTypeMapper<T>(
+    private val featureToggle: T
+) {
 
-    fun applyStringValue(
+    fun applyValue(
+        featureProperty: KMutableProperty<*>,
+        property: Map.Entry<String, PageProperty>
+    ) {
+        when (featureProperty.returnType.classifier) {
+            String::class -> applyStringValue(featureProperty, property)
+            Boolean::class -> applyBooleanValue(featureProperty, property)
+            Number::class -> applyNumberValue(featureProperty, property)
+            else -> {
+                val classifier = featureProperty.returnType.classifier as KClass<*>
+                if (classifier.isSubclassOf(Collection::class)) {
+                    applyCollectionValue(featureProperty, property)
+                } else if (classifier.isSubclassOf(Enum::class)) {
+                    applyEnumValue(featureProperty, property)
+                } else {
+                    throw IllegalArgumentException("Unsupported property type: ${featureProperty.returnType.classifier}.")
+                }
+            }
+        }
+    }
+
+    private fun applyStringValue(
         property: KMutableProperty<*>,
         propertyValue: Map.Entry<String, PageProperty>
     ) {
@@ -46,7 +71,7 @@ class NotionTypeMapper<T>(private val featureToggle: T) {
         }
     }
 
-    fun applyBooleanValue(
+    private fun applyBooleanValue(
         property: KMutableProperty<*>,
         propertyValue: Map.Entry<String, PageProperty>
     ) {
@@ -60,7 +85,7 @@ class NotionTypeMapper<T>(private val featureToggle: T) {
         }
     }
 
-    fun applyNumberValue(
+    private fun applyNumberValue(
         property: KMutableProperty<*>,
         propertyValue: Map.Entry<String, PageProperty>
     ) {
@@ -71,7 +96,7 @@ class NotionTypeMapper<T>(private val featureToggle: T) {
         }
     }
 
-    fun applyEnumValue(
+    private fun applyEnumValue(
         property: KMutableProperty<*>,
         propertyValue: Map.Entry<String, PageProperty>
     ) {
@@ -79,19 +104,19 @@ class NotionTypeMapper<T>(private val featureToggle: T) {
         property.setter.call(
             featureToggle,
             classifier.java
-                .getMethod(FeatureFetcher.VALUE_OF, String::class.java)
+                .getMethod(VALUE_OF, String::class.java)
                 .invoke(null, propertyValue.value.select?.name)
         )
     }
 
-    fun applyCollectionValue(it: KMutableProperty<*>, property: Map.Entry<String, PageProperty>) {
+    private fun applyCollectionValue(it: KMutableProperty<*>, property: Map.Entry<String, PageProperty>) {
         val enumType = it.returnType.arguments[0].type!!.classifier as KClass<*>
         if (enumType.isSubclassOf(Enum::class)) {
             it.setter.call(
                 featureToggle,
                 property.value.multiSelect?.map { select ->
                     enumType.java
-                        .getMethod(FeatureFetcher.VALUE_OF, String::class.java)
+                        .getMethod(VALUE_OF, String::class.java)
                         .invoke(null, select.name)
                 }
             )
@@ -100,5 +125,10 @@ class NotionTypeMapper<T>(private val featureToggle: T) {
                 "Collection of objects is not supported. Please use collections of Enums instead."
             )
         }
+    }
+
+    companion object {
+
+        const val VALUE_OF = "valueOf"
     }
 }

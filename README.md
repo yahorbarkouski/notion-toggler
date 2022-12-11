@@ -49,20 +49,27 @@ The standard Notion Feature Toggler SDK relies on strings for accessing features
     - TODO: Attach the Kotlin and Notion type mapping table
 5. Fill in the application properties:
     - The mandatory properties are:
-
         ```yaml
         notion.toggler.database-name=#the name of your new-brand database
         notion.toggler.token=#your Notion Integration Token
         ```
 
     - The optional properties are:
-
         ```yaml
         notion.toggler.refresh-interval=#value in seconds, must be > 3. Default: 30
         notion.toggler.model-path=#path to your custom FF model, like: io.yahorbarkouski.notion.toggler.spring.CustomFeatureFlag
         ```
-
-6. Inject FeatureToggler where needed and start using it: TODO
+6. Inject FeatureToggler start using it:
+   ```kotlin
+   @Inject
+   private val featureToggler: FeatureToggler
+     
+   fun doSomething() { 
+      if (featureToggler.isEnabled("my-feature")) {
+           // do something
+      }
+   }
+   ```
 
 ## Samples
 TODO

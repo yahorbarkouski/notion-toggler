@@ -1,7 +1,7 @@
 package io.yahorbarkouski.notion.toggler.gradle.task
 
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
-import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
+import io.yahorbarkouski.notion.toggler.core.fetcher.DefaultFeatureFetcher
 import io.yahorbarkouski.notion.toggler.gradle.extension.NotionExtension
 import io.yahorbarkouski.notion.toggler.gradle.generator.KotlinFeatureGenerator
 import notion.api.v1.NotionClient
@@ -22,12 +22,12 @@ abstract class NotionFeatureToggleCodegenTask @Inject constructor() : DefaultTas
         require(extension.token?.isNotBlank() == true) { "Notion token must be set" }
 
         @Suppress("UNCHECKED_CAST")
-        val fetcher = FeatureFetcher(
+        val fetcher = DefaultFeatureFetcher(
             NotionClient(extension.token!!),
             extension.databaseName,
             Class.forName(extension.modelPath).kotlin as KClass<FeatureFlag>
         )
-        val features = fetcher.refreshFeatureToggles()
+        val features = fetcher.fetchFeatureFlags()
 
         try {
             featureGenerator.generate(

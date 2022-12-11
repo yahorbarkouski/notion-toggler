@@ -1,7 +1,7 @@
 package io.yahorbarkouski.notion.toggler.spring
 
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
-import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
+import io.yahorbarkouski.notion.toggler.core.fetcher.DefaultFeatureFetcher
 import io.yahorbarkouski.notion.toggler.spring.config.NotionTogglerProperties
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -15,12 +15,13 @@ import javax.annotation.PostConstruct
  * Service that is responsible for fetching the list of features from the provided [fetcher]
  * and making it available to the rest of the application.
  *
- * @param fetcher the [FeatureFetcher] that is responsible for fetching the feature toggles from a database.
+ * @param fetcher the [DefaultFeatureFetcher] that is responsible for fetching the feature toggles from a database.
  * @param properties the [NotionTogglerProperties] containing the configuration for the service.
  */
+@Suppress("unused")
 @Service
 class FeatureToggler(
-    private val fetcher: FeatureFetcher<FeatureFlag>,
+    private val fetcher: DefaultFeatureFetcher<FeatureFlag>,
     private val properties: NotionTogglerProperties
 ) {
 
@@ -34,7 +35,7 @@ class FeatureToggler(
     fun start() {
         GlobalScope.launch {
             while (true) {
-                val toggles = fetcher.refreshFeatureToggles()
+                val toggles = fetcher.fetchFeatureFlags()
                 featureToggles.clear()
                 toggles.forEach { toggle -> featureToggles[toggle.name] = toggle }
                 delay(properties.refreshInterval * 1000L)

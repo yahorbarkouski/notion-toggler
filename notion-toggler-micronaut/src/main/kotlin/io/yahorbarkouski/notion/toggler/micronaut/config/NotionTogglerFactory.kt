@@ -3,7 +3,7 @@ package io.yahorbarkouski.notion.toggler.micronaut.config
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
-import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
+import io.yahorbarkouski.notion.toggler.core.fetcher.DefaultFeatureFetcher
 import notion.api.v1.NotionClient
 import kotlin.reflect.KClass
 
@@ -17,7 +17,7 @@ class NotionTogglerFactory {
 
     @Suppress("UNCHECKED_CAST")
     @Bean
-    fun featureToggleFetcher(notionClient: NotionClient, properties: NotionTogglerProperties) = FeatureFetcher(
+    fun featureToggleFetcher(notionClient: NotionClient, properties: NotionTogglerProperties) = DefaultFeatureFetcher(
         notionClient,
         properties.databaseName,
         Class.forName(properties.modelPath).kotlin as KClass<FeatureFlag>
