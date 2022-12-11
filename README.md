@@ -9,7 +9,7 @@ Why not? All feature toggle providers on the market come with **a cost** and **l
 You can easily customize the `FeatureFlag` model to fit your needs and use this information in your code. For example, you can add a new property to the Notion Database to let everyone know that a new feature may break production, or add a new Person type column to differentiate Feature Flags by who is responsible for them.
 
 ### Completely free
-Unlike other feature toggle providers, the Notion Feature Toggler has no cost at all because it uses the Notion API, which has no limits on the number of requests per time period. If you're developing a startup and using Notion for documentation, this is the easiest and most cost-effective way to manage your features.
+Unlike other feature toggle providers, the Notion Feature Toggler has no cost at all because it uses the Notion API, which has [no limits](https://developers.notion.com/reference/request-limits) on the number of requests per time period. If you're developing a startup and using Notion for documentation, this is the easiest and most cost-effective way to manage your features.
 
 ### Spring Boot and Micronaut starters
 The Notion Feature Toggler comes with pre-built integrations for Spring Boot and Micronaut, so you don't have to worry about writing your own notion-toggler-client. Just add the dependency and start using it.
