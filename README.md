@@ -21,7 +21,48 @@ With the Notion Feature Toggler, you have full control over the interval at whic
 The standard Notion Feature Toggler SDK relies on strings for accessing features, which can be error-prone and hard to maintain. The Gradle Plugin for generating constants over existing Feature Flags makes the system more robust and easier to maintain, and allows you to view information about your features directly in your code.
 
 ## Usage
-TODO 
+
+1. First, you need to create a new integration in Notion to get an Integration API Token:
+    - Go to [my-integrations](https://www.notion.so/my-integrations) page;
+    - Give your integration a name (we recommend using the "-toggler" postfix to avoid confusion);
+    - Choose the workspace where you want to store your Feature Flag database;
+    - Give your integration the **Read Content Capability** permission. Notion Toggler only reads your database, no write-operations needed;
+    - Click the Submit button and copy your **Internal Integration Token**.
+2. Next, you need to create a database and connect it to your integration.
+    - You can duplicate the following database in your Notion workspace: https://industrious-wool-c90.notion.site/86969c46aed94f8ebfb667ffef76ba2c?v=98dfa66ffbeb4e5b80877e5bc2362f84
+    - Click the three dots in the top-right corner of the database page, and select "Add Connection". Choose the integration you created in step 1.
+    - Optional: If you haven't connected Notion Toggler to your code yet, you can add new properties to your database as needed. For example, you might want to create a new column to store commands for your Feature Toggles.
+3. Import Notion Toggler into your project.
+    - Spring Boot Starter dependency:
+        ```kotlin
+        implementation("com.github.notion-toggler:notion-toggler-spring-boot-starter:1.0.0")
+        ```
+    - Micronaut dependency:
+         ```kotlin
+        implementation("com.github.notion-toggler:notion-toggler-micronaut:1.0.0")
+        ```
+    - If you're using a different framework, you can use the core library and implement your own integration:
+        ```kotlin
+        implementation("com.github.notion-toggler:notion-toggler-core:1.0.0")
+        ```
+4. Optional: If you created your own custom FF model for your database, you need to duplicate the new properties in your code and inherit from the FeatureFlag base model.
+    - TODO: Attach the Kotlin and Notion type mapping table
+5. Fill in the application properties.
+    - The mandatory properties are:
+
+        ```yaml
+        notion.toggler.database-name=#The name of your new-brand database
+        notion.toggler.token=#Your Notion Integration Token
+        ```
+
+    - The optional properties are:
+
+        ```yaml
+        notion.toggler.refresh-interval=#value in seconds, must be > 3. Default: 30
+        notion.toggler.model-path=#path to your custom FF model, like: io.yahorbarkouski.notion.toggler.spring.CustomFeatureFlag
+        ```
+
+6. Inject FeatureToggler where needed and start using it: TODO
 
 ## Samples
 TODO
