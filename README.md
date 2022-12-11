@@ -51,8 +51,8 @@ The standard Notion Feature Toggler SDK relies on strings for accessing features
     - The mandatory properties are:
 
         ```yaml
-        notion.toggler.database-name=#The name of your new-brand database
-        notion.toggler.token=#Your Notion Integration Token
+        notion.toggler.database-name=#the name of your new-brand database
+        notion.toggler.token=#your Notion Integration Token
         ```
 
     - The optional properties are:
