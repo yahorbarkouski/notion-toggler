@@ -2,7 +2,7 @@
 > Notion Feature Toggler is a lightweight, customizable, and completely free tool for managing feature flags in your application. It is based on the powerful Notion API, making it easy to manage which features are available in your app.
 
 ## Why? 
-Why not? All feature toggle providers on the market come with a cost and lack customization options. They rely on unreliable "strings" of names for accessing features, and doesn't really provide any in-code information. Notion Feature Toggler kills these issues, providing a flexible, free, and intuitive way to manage and access feature flags.
+Why not? All feature toggle providers on the market come with **a cost** and **lack customization** options. They **rely on unreliable "strings"** of names for accessing features, and doesn't really provide any in-code information. Notion Feature Toggler kills these issues, providing a flexible, free, and intuitive way to manage and access feature flags.
 
 ## Core features
 ### Full customization of the FeatureFlag model
