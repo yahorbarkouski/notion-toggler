@@ -28,11 +28,11 @@ The standard Notion Feature Toggler SDK relies on strings for accessing features
     - Choose the workspace where you want to store your Feature Flag database;
     - Give your integration the **Read Content Capability** permission. Notion Toggler only reads your database, no write-operations needed;
     - Click the Submit button and copy your **Internal Integration Token**.
-2. Next, you need to create a database and connect it to your integration.
-    - You can duplicate the following database in your Notion workspace: https://industrious-wool-c90.notion.site/86969c46aed94f8ebfb667ffef76ba2c?v=98dfa66ffbeb4e5b80877e5bc2362f84
-    - Click the three dots in the top-right corner of the database page, and select "Add Connection". Choose the integration you created in step 1.
+2. Next, you need to create a database and connect it to your integration:
+    - You can duplicate the following database in your Notion workspace: https://industrious-wool-c90.notion.site/86969c46aed94f8ebfb667ffef76ba2c?v=98dfa66ffbeb4e5b80877e5bc2362f84;
+    - Click the three dots in the top-right corner of the database page, and select "Add Connection". Choose the integration you created in step 1;
     - Optional: If you haven't connected Notion Toggler to your code yet, you can add new properties to your database as needed. For example, you might want to create a new column to store commands for your Feature Toggles.
-3. Import Notion Toggler into your project.
+3. Import Notion Toggler into your project:
     - Spring Boot Starter dependency:
         ```kotlin
         implementation("com.github.notion-toggler:notion-toggler-spring-boot-starter:1.0.0")
@@ -45,9 +45,9 @@ The standard Notion Feature Toggler SDK relies on strings for accessing features
         ```kotlin
         implementation("com.github.notion-toggler:notion-toggler-core:1.0.0")
         ```
-4. Optional: If you created your own custom FF model for your database, you need to duplicate the new properties in your code and inherit from the FeatureFlag base model.
+4. Optional: If you created your own custom FF model for your database, you need to duplicate the new properties in your code and inherit from the FeatureFlag base model:
     - TODO: Attach the Kotlin and Notion type mapping table
-5. Fill in the application properties.
+5. Fill in the application properties:
     - The mandatory properties are:
 
         ```yaml
