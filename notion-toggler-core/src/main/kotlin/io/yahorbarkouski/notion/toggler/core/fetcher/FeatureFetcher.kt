@@ -89,6 +89,7 @@ class FeatureFetcher<T : FeatureFlag>(
         }
         return featureToggle
     }
+
     companion object {
 
         const val VALUE_OF = "valueOf"
