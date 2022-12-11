@@ -1,12 +1,14 @@
 package io.yahorbarkouski.notion.toggler.core.fetcher
 
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
+import io.yahorbarkouski.notion.toggler.core.mapper.NotionTypeMapper
 import notion.api.v1.NotionClient
 import notion.api.v1.model.pages.Page
 import notion.api.v1.request.search.SearchRequest
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -31,7 +33,7 @@ class FeatureFetcher<T : FeatureFlag>(
     private val databaseId: String by lazy {
         notionClient.search(
             databaseName,
-            SearchRequest.SearchFilter("database", property = "object")
+            SearchRequest.SearchFilter(SEARCH_FILTER_DATABASE, property = SEARCH_FILTER_OBJECT)
         ).results.first().asDatabase().id
     }
 
@@ -62,44 +64,35 @@ class FeatureFetcher<T : FeatureFlag>(
      */
     private fun convertToFeature(page: Page): T {
         val featureToggle = klass.createInstance()
+        val mapper = NotionTypeMapper(featureToggle)
         for (property in page.properties) {
             klass.memberProperties
                 .filterIsInstance<KMutableProperty<*>>()
                 .firstOrNull { it.name.lowercase() == property.key.lowercase() }
-                ?.let {
-                    val setter = it.setter
-                    when (it.returnType.classifier) {
-                        String::class -> {
-                            property.value.apply {
-                                title?.let { title ->
-                                    if (title.isNotEmpty()) {
-                                        setter.call(featureToggle, title.first().plainText)
-                                    }
-                                }
-                                richText?.let { richText ->
-                                    if (richText.isNotEmpty()) {
-                                        setter.call(featureToggle, richText.first().plainText)
-                                    }
-                                }
-                                people?.let { user ->
-                                    if (user.isNotEmpty()) {
-                                        setter.call(featureToggle, user.first().name)
-                                    }
-                                }
-                            }
-                        }
-                        Boolean::class -> {
-                            setter.call(featureToggle, property.value.checkbox)
-                        }
-                        Number::class -> {
-                            setter.call(featureToggle, property.value.number)
-                        }
+                ?.let { featureProperty ->
+                    when (featureProperty.returnType.classifier) {
+                        String::class -> mapper.applyStringValue(featureProperty, property)
+                        Boolean::class -> mapper.applyBooleanValue(featureProperty, property)
+                        Number::class -> mapper.applyNumberValue(featureProperty, property)
                         else -> {
-                            throw IllegalArgumentException("Unsupported type ${it.returnType.classifier}")
+                            val classifier = featureProperty.returnType.classifier as KClass<*>
+                            if (classifier.isSubclassOf(Collection::class)) {
+                                mapper.applyCollectionValue(featureProperty, property)
+                            } else if (classifier.isSubclassOf(Enum::class)) {
+                                mapper.applyEnumValue(featureProperty, property)
+                            } else {
+                                throw IllegalArgumentException("Unsupported property type: ${featureProperty.returnType.classifier}.")
+                            }
                         }
                     }
                 } ?: throw IllegalArgumentException("There is no property mapped to type ${property.key} in ${klass.qualifiedName}")
         }
         return featureToggle
+    }
+    companion object {
+
+        const val VALUE_OF = "valueOf"
+        const val SEARCH_FILTER_DATABASE = "database"
+        const val SEARCH_FILTER_OBJECT = "object"
     }
 }
