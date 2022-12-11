@@ -103,11 +103,3 @@ class FeatureFetcher<T : FeatureFlag>(
         return featureToggle
     }
 }
-
-fun main() {
-    FeatureFetcher(
-        NotionClient("secret_Q3a6eehEg6d4wD5GNfDNKBS9qpV0TIwH65xgUemGNvd"),
-        "Notion",
-        FeatureFlag::class
-    ).refreshFeatureToggles()
-}
