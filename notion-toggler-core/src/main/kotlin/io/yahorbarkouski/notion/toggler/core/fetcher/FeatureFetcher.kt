@@ -81,9 +81,9 @@ class FeatureFetcher<T : FeatureFlag>(
                                         setter.call(featureToggle, richText.first().plainText)
                                     }
                                 }
-                                people?.let { people ->
-                                    if (people.isNotEmpty()) {
-                                        setter.call(featureToggle, people.first().name)
+                                people?.let { user ->
+                                    if (user.isNotEmpty()) {
+                                        setter.call(featureToggle, user.first().name)
                                     }
                                 }
                             }
