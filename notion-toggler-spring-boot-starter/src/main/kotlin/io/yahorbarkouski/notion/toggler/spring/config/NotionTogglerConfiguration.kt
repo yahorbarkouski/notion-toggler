@@ -2,6 +2,8 @@ package io.yahorbarkouski.notion.toggler.spring.config
 
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
 import io.yahorbarkouski.notion.toggler.core.fetcher.DefaultFeatureFetcher
+import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
+import io.yahorbarkouski.notion.toggler.spring.FeatureToggler
 import notion.api.v1.NotionClient
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -30,4 +32,9 @@ class NotionTogglerConfiguration {
         properties.databaseName,
         Class.forName(properties.modelPath).kotlin as KClass<FeatureFlag>
     )
+
+    @Bean
+    fun featureToggler(featureFetcher: FeatureFetcher<FeatureFlag>, properties: NotionTogglerProperties): FeatureToggler {
+        return FeatureToggler(featureFetcher, properties)
+    }
 }

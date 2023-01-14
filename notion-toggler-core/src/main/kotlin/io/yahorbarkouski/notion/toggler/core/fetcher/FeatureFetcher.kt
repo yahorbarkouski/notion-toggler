@@ -13,6 +13,11 @@ interface FeatureFetcher<T : FeatureFlag> {
      */
     fun fetchFeatureFlags(): List<T>
 
+    /**
+     * Fetches feature flag names with enabled property per environment.
+     */
+    fun fetchFeatureFlagAvailability(environment: String): Map<String, Boolean>
+
     companion object {
 
         const val SEARCH_FILTER_DATABASE = "database"

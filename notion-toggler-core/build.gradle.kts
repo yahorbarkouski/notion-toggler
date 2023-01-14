@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 java {
@@ -19,4 +20,36 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                withXml {
+                    val root = asNode()
+                    var nodes = root["dependencyManagement"] as groovy.util.NodeList
+                    while (nodes.isNotEmpty()) {
+                        root.remove(nodes.first() as groovy.util.Node)
+
+                        nodes = root["dependencyManagement"] as groovy.util.NodeList
+                    }
+                }
+                name.set(project.name)
+                description.set(project.description)
+            }
+        }
+    }
 }

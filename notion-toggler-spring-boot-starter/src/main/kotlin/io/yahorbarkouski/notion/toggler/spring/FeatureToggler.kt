@@ -2,14 +2,17 @@ package io.yahorbarkouski.notion.toggler.spring
 
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
 import io.yahorbarkouski.notion.toggler.core.fetcher.DefaultFeatureFetcher
+import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher
 import io.yahorbarkouski.notion.toggler.spring.config.NotionTogglerProperties
+import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
-import javax.annotation.PostConstruct
 
 /**
  * Service that is responsible for fetching the list of features from the provided [fetcher]
@@ -21,11 +24,12 @@ import javax.annotation.PostConstruct
 @Suppress("unused")
 @Service
 class FeatureToggler(
-    private val fetcher: DefaultFeatureFetcher<FeatureFlag>,
+    private val fetcher: FeatureFetcher<FeatureFlag>,
     private val properties: NotionTogglerProperties
 ) {
 
     private val featureToggles = ConcurrentHashMap<String, FeatureFlag>()
+    private val featureTogglesAvailability = ConcurrentHashMap<String, Boolean>()
 
     /**
      * Initializes the service by starting a coroutine that will refresh the feature toggles every $refreshInterval seconds.
@@ -35,9 +39,14 @@ class FeatureToggler(
     fun start() {
         GlobalScope.launch {
             while (true) {
+                fetcher.fetchFeatureFlagAvailability(properties.environment).forEach { (feature, enabled) ->
+                    featureTogglesAvailability[feature] = enabled
+                }
+
                 val toggles = fetcher.fetchFeatureFlags()
                 featureToggles.clear()
                 toggles.forEach { toggle -> featureToggles[toggle.name] = toggle }
+
                 delay(properties.refreshInterval * 1000L)
             }
         }
@@ -51,7 +60,7 @@ class FeatureToggler(
      */
     @Synchronized
     fun isFeatureEnabled(featureName: String): Boolean {
-        return featureToggles[featureName]?.enabled ?: false
+        return featureTogglesAvailability[featureName] ?: false
     }
 
     /**
@@ -63,5 +72,9 @@ class FeatureToggler(
     @Synchronized
     fun getFeatureToggle(featureName: String): FeatureFlag? {
         return featureToggles[featureName]
+    }
+
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(FeatureToggler::class.java)
     }
 }

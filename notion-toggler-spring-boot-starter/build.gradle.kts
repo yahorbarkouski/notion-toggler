@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 java {
@@ -9,7 +10,7 @@ java {
 
 dependencies {
     api(project(":notion-toggler-core", "default"))
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.14"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.0.0"))
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter")
 
@@ -27,4 +28,36 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            versionMapping {
+                allVariants {
+                    fromResolutionResult()
+                }
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                withXml {
+                    val root = asNode()
+                    var nodes = root["dependencyManagement"] as groovy.util.NodeList
+                    while (nodes.isNotEmpty()) {
+                        root.remove(nodes.first() as groovy.util.Node)
+
+                        nodes = root["dependencyManagement"] as groovy.util.NodeList
+                    }
+                }
+                name.set(project.name)
+                description.set(project.description)
+            }
+        }
+    }
 }

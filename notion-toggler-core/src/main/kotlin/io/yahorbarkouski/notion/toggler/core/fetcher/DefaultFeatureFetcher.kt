@@ -1,5 +1,7 @@
 package io.yahorbarkouski.notion.toggler.core.fetcher
 
+import com.sun.org.slf4j.internal.Logger
+import com.sun.org.slf4j.internal.LoggerFactory
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
 import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher.Companion.SEARCH_FILTER_DATABASE
 import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher.Companion.SEARCH_FILTER_OBJECT
@@ -49,6 +51,40 @@ class DefaultFeatureFetcher<T : FeatureFlag>(
     }
 
     /**
+     * Fetches the availability of feature flags for a given environment.
+     *
+     * @param environment The environment to fetch the feature flag availability for.
+     * @return A map of feature names to their availability (true if enabled, false otherwise)
+     *
+     * @throws IllegalStateException if the environment doesn't have a relation to the feature information database.
+     */
+    override fun fetchFeatureFlagAvailability(environment: String): Map<String, Boolean> {
+        val environmentDatabaseId = notionClient.search(
+            environment,
+            SearchRequest.SearchFilter(SEARCH_FILTER_DATABASE, property = SEARCH_FILTER_OBJECT)
+        ).results.first().asDatabase().id
+
+        val environmentDatabases = notionClient.queryDatabase(environmentDatabaseId).results
+
+        return environmentDatabases.associate { databaseEntry ->
+            val featureName = databaseEntry.properties[FEATURE_PROPERTY]?.let {
+                notionClient.retrievePage(it.relation?.first()?.id!!)
+                    .properties[NAME_PROPERTY]!!
+                    .title!![0]
+                    .plainText
+            } ?: ""
+
+            if (featureName.isEmpty()) {
+                log.error("Feature name is empty for database entry: $databaseEntry")
+            }
+
+            val enabled = databaseEntry.properties[ENABLED_PROPERTY]?.checkbox ?: false
+
+            featureName to enabled
+        }
+    }
+
+    /**
      * This method takes a `Page` object as a parameter and converts it
      * to an instance of the class specified by the `klass` parameter in the constructor.
      * The method iterates over the page properties and uses the property key to match
@@ -75,5 +111,13 @@ class DefaultFeatureFetcher<T : FeatureFlag>(
                 )
         }
         return featureToggle
+    }
+
+    companion object {
+        private val log: Logger = LoggerFactory.getLogger(DefaultFeatureFetcher::class.java)
+
+        private const val FEATURE_PROPERTY = "Feature"
+        private const val ENABLED_PROPERTY = "Enabled"
+        private const val NAME_PROPERTY = "Name"
     }
 }

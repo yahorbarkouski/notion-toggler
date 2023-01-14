@@ -6,15 +6,15 @@ package io.yahorbarkouski.notion.toggler.core
  */
 open class FeatureFlag(
     open var name: String = "",
-    open var enabled: Boolean = false,
-    open var description: String? = ""
+    open var description: String? = "",
+    open var created: String? = ""
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is FeatureFlag) return false
 
         if (name != other.name) return false
-        if (enabled != other.enabled) return false
+        if (created != other.created) return false
         if (description != other.description) return false
 
         return true
@@ -22,12 +22,12 @@ open class FeatureFlag(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + enabled.hashCode()
+        result = 31 * result + (created?.hashCode() ?: 0)
         result = 31 * result + (description?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "FeatureToggle(name='$name', enabled=$enabled, description=$description)"
+        return "FeatureToggle(name='$name', description=$description, created=$created)"
     }
 }
