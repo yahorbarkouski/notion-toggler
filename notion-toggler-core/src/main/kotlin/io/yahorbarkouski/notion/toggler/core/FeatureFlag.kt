@@ -10,7 +10,6 @@ import kotlin.reflect.jvm.javaField
  * that represents a feature flag with a name, an enabled state, and an optional description.
  */
 open class FeatureFlag(
-    open var uuid: String = "",
     open var name: String = "",
     @Documented
     open var description: String? = "",
@@ -20,7 +19,6 @@ open class FeatureFlag(
         if (this === other) return true
         if (other !is FeatureFlag) return false
 
-        if (uuid != other.uuid) return false
         if (name != other.name) return false
         if (created != other.created) return false
         if (description != other.description) return false
@@ -30,14 +28,14 @@ open class FeatureFlag(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + uuid.hashCode()
+
         result = 31 * result + (created?.hashCode() ?: 0)
         result = 31 * result + (description?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "FeatureToggle(name='$name', description=$description, created=$created)"
+        return "FeatureFlag(name='$name', description=$description, created=$created)"
     }
 
     fun achieveDocumentedFields(): Map<String, String> {

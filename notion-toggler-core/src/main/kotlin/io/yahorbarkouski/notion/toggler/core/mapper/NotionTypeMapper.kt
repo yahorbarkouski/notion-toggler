@@ -6,12 +6,22 @@ import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.isSubclassOf
 
 /**
- * The `NotionTypeMapper` class is a generic class that converts a `PageProperty` object to a specified Kotlin type.
+ * A class that maps Notion properties to a given class of type T.
+ *
+ * @param featureToggle The class of type T to map Notion properties to.
+ *
+ * @constructor Creates a new instance of the NotionTypeMapper class.
  */
-class NotionTypeMapper<T>(
-    private val featureToggle: T
-) {
+class NotionTypeMapper<T>(private val featureToggle: T) {
 
+    /**
+     * Applies the value of a Notion property to the corresponding property of the class of type T.
+     *
+     * @param featureProperty The property of the class of type T to apply the value to.
+     * @param property The Notion property to apply the value from.
+     *
+     * @throws IllegalArgumentException if the property type is not supported.
+     */
     fun applyValue(
         featureProperty: KMutableProperty<*>,
         property: Map.Entry<String, PageProperty>
