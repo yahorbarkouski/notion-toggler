@@ -1,7 +1,5 @@
 package io.yahorbarkouski.notion.toggler.core.fetcher
 
-import com.sun.org.slf4j.internal.Logger
-import com.sun.org.slf4j.internal.LoggerFactory
 import io.yahorbarkouski.notion.toggler.core.FeatureFlag
 import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher.Companion.SEARCH_FILTER_DATABASE
 import io.yahorbarkouski.notion.toggler.core.fetcher.FeatureFetcher.Companion.SEARCH_FILTER_OBJECT
@@ -74,10 +72,6 @@ class DefaultFeatureFetcher<T : FeatureFlag>(
                     .plainText
             } ?: ""
 
-            if (featureName.isEmpty()) {
-                log.error("Feature name is empty for database entry: $databaseEntry")
-            }
-
             val enabled = databaseEntry.properties[ENABLED_PROPERTY]?.checkbox ?: false
 
             featureName to enabled
@@ -114,8 +108,6 @@ class DefaultFeatureFetcher<T : FeatureFlag>(
     }
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(DefaultFeatureFetcher::class.java)
-
         private const val FEATURE_PROPERTY = "Feature"
         private const val ENABLED_PROPERTY = "Enabled"
         private const val NAME_PROPERTY = "Name"

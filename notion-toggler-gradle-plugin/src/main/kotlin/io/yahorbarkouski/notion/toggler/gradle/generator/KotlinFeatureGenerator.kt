@@ -37,20 +37,21 @@ class KotlinFeatureGenerator : FeatureGenerator() {
             .addKdoc(FILE_HEADER_KDOC)
             .addAnnotation(
                 AnnotationSpec.Companion.builder(Suppress::class)
-                    .addMember(CodeBlock.of("names = [\"unused\", \"RedundantVisibilityModifier\"]"))
+                    .addMember(CodeBlock.of("names = [\"RedundantVisibilityModifier\"]"))
                     .build()
             )
 
         for (feature in features) {
-            featureBuilder
-                .addProperty(
-                    PropertySpec.builder(feature.name.toEnumStyle(), String::class, KModifier.CONST)
-                        .initializer("%S", feature.name)
-                        .addKdoc(
-                            generateValidDescription(feature)
-                        )
-                        .build()
-                )
+            val property = PropertySpec.builder(feature.name.toEnumStyle(), String::class, KModifier.CONST)
+                .initializer("%S", feature.name)
+
+            println("${feature.achieveDocumentedFields()}!!!!")
+
+            for ((title, text) in feature.achieveDocumentedFields()) {
+                property.addKdoc(generateValidKDocText(title, text))
+            }
+
+            featureBuilder.addProperty(property.build())
         }
 
         sourceSetDirectory.mkdirs()
@@ -61,18 +62,18 @@ class KotlinFeatureGenerator : FeatureGenerator() {
             .writeTo(Path.of("${sourceSetDirectory.path}/"))
     }
 
-    private fun generateValidDescription(feature: FeatureFlag): String {
-        var description = "__Description__: "
-        description += if (feature.description?.trim()?.isNotBlank() == true) {
-            feature.description?.toMapOfWords()?.toFormattedLine()
-        } else {
-            "empty"
-        }
+    private fun generateValidKDocText(title: String, text: String?): String {
+        var kDocText = "__${title}__: "
+        kDocText += if (text?.trim()?.isNotBlank() == true) {
+            text.toMapOfWords().toFormattedLine()
+        } else { EMPTY_VALUE }
 
-        return description
+        return kDocText
     }
 
     companion object {
         private const val KOTLIN_SOURCE_SET = "src/main/kotlin/"
+
+        private const val EMPTY_VALUE = "empty"
     }
 }

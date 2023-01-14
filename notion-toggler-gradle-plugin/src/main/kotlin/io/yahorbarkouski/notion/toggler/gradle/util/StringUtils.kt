@@ -3,7 +3,8 @@ package io.yahorbarkouski.notion.toggler.gradle.util
 import java.util.Locale
 
 fun String.toEnumStyle(): String = this
-    .camelCaseToSnakeCase()
+    .camelCaseToSnakeCase().trim()
+    .replace(" ", "_")
     .replace("-", "_")
     .replace(".", "_")
     .uppercase(Locale.getDefault())
@@ -24,11 +25,6 @@ fun String.toMapOfWords(): Map<String, Int> = this
         s to s.length + (if (index > 0) this.split(" ")[index - 1].length else 0)
     }
     .toMap()
-
-fun String.snakeToCamelCaseWithFirstLetterCapital(): String = this
-    .split("_")
-    .joinToString("") { it.capitalize() }
-    .apply { first().toUpperCase() }
 
 /**
  * Reformat a string, breaking a line right before the maxLength value, to avoid linter failures.

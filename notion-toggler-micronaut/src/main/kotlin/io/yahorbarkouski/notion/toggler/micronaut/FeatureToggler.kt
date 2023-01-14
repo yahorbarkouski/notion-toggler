@@ -26,6 +26,7 @@ class FeatureToggler(
 ) {
 
     private val featureToggles = ConcurrentHashMap<String, FeatureFlag>()
+    private val featureTogglesAvailability = ConcurrentHashMap<String, Boolean>()
 
     /**
      * Initializes the service by starting a coroutine that will refresh the feature toggles every $refreshInterval seconds.
@@ -35,9 +36,14 @@ class FeatureToggler(
     fun start() {
         GlobalScope.launch {
             while (true) {
+                fetcher.fetchFeatureFlagAvailability(properties.environment).forEach { (feature, enabled) ->
+                    featureTogglesAvailability[feature] = enabled
+                }
+
                 val toggles = fetcher.fetchFeatureFlags()
                 featureToggles.clear()
                 toggles.forEach { toggle -> featureToggles[toggle.name] = toggle }
+
                 delay(properties.refreshInterval * 1000L)
             }
         }
@@ -51,7 +57,7 @@ class FeatureToggler(
      */
     @Synchronized
     fun isFeatureEnabled(featureName: String): Boolean {
-        return featureToggles[featureName]?.enabled ?: false
+        return featureTogglesAvailability[featureName] ?: false
     }
 
     /**

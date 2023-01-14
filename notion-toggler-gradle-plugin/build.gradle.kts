@@ -34,7 +34,7 @@ gradlePlugin {
     plugins {
         create("notionToggler") {
             id = "io.yahorbarkouski.notion.toggler"
-            implementationClass = "io.yahorbarkouski.notion.toggler.NotionTogglerPlugin"
+            implementationClass = "io.yahorbarkouski.notion.toggler.gradle.NotionTogglerPlugin"
             displayName = "Notion Toggler gradle plugin"
             description = "Gradle plugin for Notion Feature Toggles code generation"
             version = project.version as String
