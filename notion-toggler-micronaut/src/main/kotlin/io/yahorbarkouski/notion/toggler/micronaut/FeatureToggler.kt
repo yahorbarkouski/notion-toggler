@@ -56,9 +56,7 @@ class FeatureToggler(
      * @return true if the feature is enabled, false otherwise.
      */
     @Synchronized
-    fun isFeatureEnabled(featureName: String): Boolean {
-        return featureTogglesAvailability[featureName] ?: false
-    }
+    fun isEnabled(featureName: String): Boolean = featureTogglesAvailability[featureName] ?: false
 
     /**
      * Gets the [FeatureFlag] with the given [featureName].
@@ -67,7 +65,11 @@ class FeatureToggler(
      * @return the [FeatureFlag] with the given name, or null if no such feature exists.
      */
     @Synchronized
-    fun getFeatureToggle(featureName: String): FeatureFlag? {
-        return featureToggles[featureName]
+    fun get(featureName: String): FeatureFlag? = featureToggles[featureName]
+
+    inline fun <T> ifEnabled(featureName: String, body: () -> T) {
+        if (isEnabled(featureName)) {
+            body.invoke()
+        }
     }
 }
