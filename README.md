@@ -78,7 +78,7 @@ TODO
 TODO
 
 ## Gradle Plugin
-> Gradle plugin for Notion Feature Toggles code generation
+> Gradle plugin for Notion Feature Toggles code generation, supports Kotlin generated files only for now.
 
 
 ### Reason
