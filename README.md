@@ -29,7 +29,7 @@ The standard Notion Feature Toggler SDK relies on strings for accessing features
     - Give your integration the **Read Content Capability** permission. Notion Toggler only reads your database, no write-operations needed;
     - Click the Submit button and copy your **Internal Integration Token**.
 2. Next, you need to create a database and connect it to your integration:
-    - You can duplicate the following database in your Notion workspace: https://industrious-wool-c90.notion.site/86969c46aed94f8ebfb667ffef76ba2c?v=98dfa66ffbeb4e5b80877e5bc2362f84;
+    - You can duplicate the following database in your Notion workspace: https://industrious-wool-c90.notion.site/Features-548bf64714564bad892132c75515336e;
     - Click the three dots in the top-right corner of the database page, and select "Add Connection". Choose the integration you created in step 1;
     - Optional: If you haven't connected Notion Toggler to your code yet, you can add new properties to your database as needed. For example, you might want to create a new column to store commands for your Feature Toggles.
 3. Import Notion Toggler into your project:
